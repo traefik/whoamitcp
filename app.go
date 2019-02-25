@@ -14,11 +14,13 @@ import (
 
 var port string
 var certFile, keyFile string
+var name string
 
 func init() {
 	flag.StringVar(&port, "port", ":80", "give me a port number")
 	flag.StringVar(&certFile, "certFile", "", "TLS - certificate path")
 	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
+	flag.StringVar(&name, "name", "", "name")
 }
 
 func main() {
@@ -77,6 +79,9 @@ func serveTCP(conn net.Conn) {
 func whoAmIInfo () string {
 	var out bytes.Buffer
 
+	if len(name)>0 {
+		out.WriteString(fmt.Sprintf("Name: %s\n", name))
+	}
 	hostname, _ := os.Hostname()
 	out.WriteString(fmt.Sprintf("Hostname: %s\n", hostname))
 
