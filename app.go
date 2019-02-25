@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"log"
@@ -12,20 +13,33 @@ import (
 )
 
 var port string
+var certFile, keyFile string
 
 func init() {
 	flag.StringVar(&port, "port", ":80", "give me a port number")
+	flag.StringVar(&certFile, "certFile", "", "TLS - certificate path")
+	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
 }
 
 func main() {
 	flag.Parse()
 
 	fmt.Println("Starting up on port " + port)
-	listener, err := net.Listen("tcp", port)
+
+	var listener net.Listener
+	var err error
+	if len(certFile) > 0 && len(keyFile) > 0 {
+		tlsConfig, err := createTlsConfig(certFile, keyFile)
+		if err != nil {
+			log.Fatal("error creating TLS configuration: %v", err)
+		}
+		listener, err = tls.Listen("tcp", port, tlsConfig)
+	} else {
+		listener, err = net.Listen("tcp", port)
+	}
 
 	if err != nil {
 		log.Fatal("error opening port: %v", err)
-		return
 	}
 
 	for {
@@ -83,4 +97,14 @@ func whoAmIInfo () string {
 	}
 
 	return out.String()
+}
+
+func createTlsConfig(certFile, keyFile string) (*tls.Config, error) {
+	var err error
+
+	config := &tls.Config{}
+	config.Certificates = make([]tls.Certificate, 1)
+	config.Certificates[0], err = tls.LoadX509KeyPair(certFile, keyFile)
+
+	return config, err
 }
