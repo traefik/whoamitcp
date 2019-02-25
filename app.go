@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/tls"
 	"flag"
@@ -17,7 +16,7 @@ var certFile, keyFile string
 var name string
 
 func init() {
-	flag.StringVar(&port, "port", ":80", "give me a port number")
+	flag.StringVar(&port, "port", ":8080", "give me a port number")
 	flag.StringVar(&certFile, "certFile", "", "TLS - certificate path")
 	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
 	flag.StringVar(&name, "name", "", "name")
@@ -57,20 +56,21 @@ func serveTCP(conn net.Conn) {
 	defer conn.Close()
 
 	for {
-		netData, err := bufio.NewReader(conn).ReadString('\n')
+		bytes := make([]byte, 256)
+		n, err := conn.Read(bytes)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		temp := strings.TrimSpace(string(netData))
+		temp := strings.TrimSpace(string(bytes[:n]))
 		if temp == "STOP" {
 			break
 		} else if temp == "WHO" {
 			result := whoAmIInfo()
 			conn.Write([]byte(result))
 		} else {
-			result := fmt.Sprintf("Received: %s", netData)
+			result := fmt.Sprintf("Received: %s", bytes[:n])
 			conn.Write([]byte(result))
 		}
 	}
