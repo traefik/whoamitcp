@@ -1,0 +1,22 @@
+language: go
+dist: trusty
+
+go:
+  - 1.12.x
+  - 1.x
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+env:
+  global:
+    - GO111MODULE: on
+    - VERSION: $TRAVIS_TAG
+
+go_import_path: github.com/containous/whoamitcp
+
+install:
+  - echo "TRAVIS_GO_VERSION=$TRAVIS_GO_VERSION"
+  - make dependencies
