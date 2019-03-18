@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -25,22 +26,25 @@ func init() {
 func main() {
 	flag.Parse()
 
-	fmt.Println("Starting up on port " + port)
+	fmt.Printf("Starting up on port %s", port)
 
 	var listener net.Listener
-	var err error
 	if len(certFile) > 0 && len(keyFile) > 0 {
-		tlsConfig, err := createTlsConfig(certFile, keyFile)
+		tlsConfig, err := createTLSConfig(certFile, keyFile)
 		if err != nil {
 			log.Fatalf("error creating TLS configuration: %v", err)
 		}
-		listener, err = tls.Listen("tcp", port, tlsConfig)
-	} else {
-		listener, err = net.Listen("tcp", port)
-	}
 
-	if err != nil {
-		log.Fatalf("error opening port: %v", err)
+		listener, err = tls.Listen("tcp", port, tlsConfig)
+		if err != nil {
+			log.Fatalf("error opening port: %v", err)
+		}
+	} else {
+		var err error
+		listener, err = net.Listen("tcp", port)
+		if err != nil {
+			log.Fatalf("error opening port: %v", err)
+		}
 	}
 
 	for {
@@ -52,7 +56,7 @@ func main() {
 	}
 }
 
-func serveTCP(conn net.Conn) {
+func serveTCP(conn io.ReadWriteCloser) {
 	defer conn.Close()
 
 	for {
@@ -69,9 +73,15 @@ func serveTCP(conn net.Conn) {
 		}
 
 		if temp == "WHO" {
-			conn.Write([]byte(whoAmIInfo()))
+			_, err := conn.Write([]byte(whoAmIInfo()))
+			if err != nil {
+				log.Println(err)
+			}
 		} else {
-			conn.Write([]byte(fmt.Sprintf("Received: %s", buffer[:n])))
+			_, err := conn.Write([]byte(fmt.Sprintf("Received: %s", buffer[:n])))
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }
@@ -105,7 +115,7 @@ func whoAmIInfo() string {
 	return out.String()
 }
 
-func createTlsConfig(certFile, keyFile string) (*tls.Config, error) {
+func createTLSConfig(certFile, keyFile string) (*tls.Config, error) {
 	config := &tls.Config{}
 	config.Certificates = make([]tls.Certificate, 1)
 
