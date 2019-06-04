@@ -54,7 +54,11 @@ func main() {
 			log.Fatal(err)
 		}
 		if banner {
-			conn.Write([]byte("Welcome"))
+			_, err := conn.Write([]byte("Welcome"))
+			if err != nil {
+			    log.Fatal(err)
+			}			    
+
 		}
 		go serveTCP(conn)
 	}
