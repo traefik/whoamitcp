@@ -15,17 +15,18 @@ import (
 var port string
 var certFile, keyFile string
 var name string
+var banner bool
 
 func init() {
 	flag.StringVar(&port, "port", ":8080", "give me a port number")
 	flag.StringVar(&certFile, "certFile", "", "TLS - certificate path")
 	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
 	flag.StringVar(&name, "name", "", "name")
+	flag.BoolVar(&banner, "banner", false, "Connection banner")
 }
 
 func main() {
 	flag.Parse()
-
 	fmt.Printf("Starting up on port %s", port)
 
 	var listener net.Listener
@@ -51,6 +52,13 @@ func main() {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Fatal(err)
+		}
+		if banner {
+			_, err := conn.Write([]byte("Welcome"))
+			if err != nil {
+				log.Fatal(err)
+			}
+
 		}
 		go serveTCP(conn)
 	}
