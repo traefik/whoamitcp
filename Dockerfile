@@ -7,4 +7,4 @@ RUN CGO_ENABLED=0 go build ./
 FROM scratch
 COPY --from=builder /go/src/github.com/containous/whoamitcp/whoamitcp .
 ENTRYPOINT ["/whoamitcp"]
-EXPOSE 80
+EXPOSE 8080
