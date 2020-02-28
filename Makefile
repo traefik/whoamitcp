@@ -1,4 +1,4 @@
-.PHONY: clean check test build image dependencies fmt
+.PHONY: clean check test build image fmt
 
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 
@@ -10,19 +10,16 @@ clean:
 	rm -rf dist/ builds/ cover.out
 
 build: clean
-	GO111MODULE=on go build -v .
+	go build -v .
 
 image:
 	docker build -t $(IMAGE_NAME) .
 
-dependencies:
-	GO111MODULE=on go mod download
-
 test: clean
-	GO111MODULE=on go test -v -cover ./...
+	go test -v -cover ./...
 
 check:
-	GO111MODULE=on golangci-lint run
+	golangci-lint run
 
 fmt:
 	gofmt -s -l -w $(SRCS)
