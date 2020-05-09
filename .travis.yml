@@ -35,3 +35,7 @@ install:
   - git diff --exit-code go.mod
   - if [ -f "./go.sum" ]; then git diff --exit-code go.sum; fi
   - go mod download
+
+script:
+  - make
+  - make image

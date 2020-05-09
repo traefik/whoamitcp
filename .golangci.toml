@@ -33,6 +33,8 @@
     "gochecknoinits",
     "gomnd",
     "wsl",
+    "goerr113",
+    "testpackage",
   ]
 
 [issues]
