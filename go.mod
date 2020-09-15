@@ -1,3 +1,3 @@
-module github.com/containous/whoamitcp
+module github.com/traefik/whoamitcp
 
 go 1.12

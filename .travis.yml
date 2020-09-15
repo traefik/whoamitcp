@@ -1,6 +1,6 @@
 language: go
 
-go_import_path: github.com/containous/whoamitcp
+go_import_path: github.com/traefik/whoamitcp
 
 notifications:
   email:
