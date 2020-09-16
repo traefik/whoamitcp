@@ -2,7 +2,7 @@
 
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 
-IMAGE_NAME := containous/whoamitcp
+IMAGE_NAME := traefik/whoamitcp
 
 default: clean check test build
 
