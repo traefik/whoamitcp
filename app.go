@@ -10,12 +10,14 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	"github.com/mailgun/proxyproto"
 )
 
 var port string
 var certFile, keyFile string
 var name string
-var banner bool
+var banner, proxyprotocol bool
 
 func init() {
 	flag.StringVar(&port, "port", ":8080", "give me a port number")
@@ -23,6 +25,7 @@ func init() {
 	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
 	flag.StringVar(&name, "name", "", "name")
 	flag.BoolVar(&banner, "banner", false, "Connection banner")
+	flag.BoolVar(&proxyprotocol, "proxyprotocol", false, "Enable Proxy Protocol")
 }
 
 func main() {
@@ -65,6 +68,16 @@ func main() {
 
 func serveTCP(conn io.ReadWriteCloser) {
 	defer conn.Close()
+	var err error
+
+	h := &proxyproto.Header{}
+	if proxyprotocol {
+		h, err = proxyproto.ReadHeader(conn)
+		if err != nil {
+			log.Printf("[ERR] Proxy protocol: %s", err)
+			return
+		}
+	}
 
 	for {
 		buffer := make([]byte, 256)
@@ -80,7 +93,7 @@ func serveTCP(conn io.ReadWriteCloser) {
 		}
 
 		if temp == "WHO" {
-			_, err := conn.Write([]byte(whoAmIInfo()))
+			_, err := conn.Write([]byte(whoAmIInfo(h)))
 			if err != nil {
 				log.Println(err)
 			}
@@ -93,9 +106,21 @@ func serveTCP(conn io.ReadWriteCloser) {
 	}
 }
 
-func whoAmIInfo() string {
+func whoAmIInfo(h *proxyproto.Header) string {
 	var out bytes.Buffer
 
+	if h.Version > 0 {
+		out.WriteString(fmt.Sprintf("Proxy Protocol Version: %d\n", h.Version))
+		out.WriteString(fmt.Sprintf("Proxy Protocol Source: %s\n", h.Source.String()))
+		out.WriteString(fmt.Sprintf("Proxy Protocol Destination: %s\n", h.Destination.String()))
+		// add later: parse tlvs in proxy v2
+		// if h.Version == 2 && len(h.RawTLVs) != 0 {
+		//	tlvs, err := h.ParseTLVs()
+		//	if err != nil {
+		//       out.WriteString(fmt.Sprintf("Proxy Protocol TLVs: %d\n", ...))
+		//	}
+		//}
+	}
 	if len(name) > 0 {
 		out.WriteString(fmt.Sprintf("Name: %s\n", name))
 	}
