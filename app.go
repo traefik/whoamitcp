@@ -56,12 +56,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if banner {
-			_, err := conn.Write([]byte("Welcome"))
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
+
 		go serveTCP(conn)
 	}
 }
@@ -76,6 +71,13 @@ func serveTCP(conn io.ReadWriteCloser) {
 		if err != nil {
 			log.Printf("[ERR] Proxy protocol: %s", err)
 			return
+		}
+	}
+
+	if banner {
+		_, err := fmt.Fprintln(conn, "Welcome")
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 
