@@ -12,10 +12,12 @@ import (
 	"strings"
 )
 
-var port string
-var certFile, keyFile string
-var name string
-var banner bool
+var (
+	port              string
+	certFile, keyFile string
+	name              string
+	banner            bool
+)
 
 func init() {
 	flag.StringVar(&port, "port", ":8080", "give me a port number")
