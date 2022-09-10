@@ -66,7 +66,7 @@ func main() {
 }
 
 func serveTCP(conn io.ReadWriteCloser) {
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	for {
 		buffer := make([]byte, 256)
@@ -87,7 +87,7 @@ func serveTCP(conn io.ReadWriteCloser) {
 				log.Println(err)
 			}
 		} else {
-			_, err := conn.Write([]byte(fmt.Sprintf("Received: %s", buffer[:n])))
+			_, err := fmt.Fprintf(conn, "Received: %s", buffer[:n])
 			if err != nil {
 				log.Println(err)
 			}

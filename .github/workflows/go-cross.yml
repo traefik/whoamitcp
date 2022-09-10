@@ -1,5 +1,9 @@
 name: Go Matrix
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
 
@@ -11,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [ 1.15, 1.16, 1.x ]
+        go-version: [ 1.19, 1.x ]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
