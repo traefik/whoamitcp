@@ -1,15 +1,10 @@
-.PHONY: default check test build image publish-images
-
-TAG_NAME := $(shell git tag -l --contains HEAD)
+.PHONY: default check test build image
 
 IMAGE_NAME := traefik/whoamitcp
 
 default: check test build
 
-clean:
-	rm -rf cover.out
-
-build: clean
+build:
 	CGO_ENABLED=0 go build -v --trimpath .
 
 test:
@@ -20,6 +15,3 @@ check:
 
 image:
 	docker build -t $(IMAGE_NAME) .
-
-publish-images:
-	seihon publish -v "$(TAG_NAME)" -v "latest" --image-name $(IMAGE_NAME) --dry-run=false

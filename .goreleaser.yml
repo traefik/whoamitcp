@@ -1,0 +1,86 @@
+project_name: whoamitcp
+
+builds:
+  - binary: whoamitcp
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - '7'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^doc:'
+      - '^chore:'
+      - '^chore(deps):'
+      - '^test:'
+      - '^tests:'
+
+archives:
+  - id: whoamitcp
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm}}v{{ .Arm }}{{ end }}'
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+
+docker_manifests:
+  - name_template: 'traefik/whoamitcp:{{ .Tag }}'
+    image_templates:
+      - 'traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'traefik/whoamitcp:{{ .Tag }}-arm64'
+  - name_template: 'traefik/whoamitcp:latest'
+    image_templates:
+      - 'traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'traefik/whoamitcp:{{ .Tag }}-arm64'
+  - name_template: 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}'
+    image_templates:
+      - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-amd64'
+      - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
+
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    dockerfile: buildx.Dockerfile
+    image_templates:
+      - 'traefik/whoamitcp:latest-amd64'
+      - 'traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-amd64'
+    build_flag_templates:
+      - '--pull'
+      - '--label=org.opencontainers.image.description=Tiny Go TCP server that prints OS information and request to output'
+      - '--label=org.opencontainers.image.created={{.Date}}'
+      - '--label=org.opencontainers.image.title={{.ProjectName}}'
+      - '--label=org.opencontainers.image.revision={{.FullCommit}}'
+      - '--label=org.opencontainers.image.version={{.Version}}'
+      - '--label=org.opencontainers.image.source={{.GitURL}}'
+      - '--platform=linux/amd64'
+
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    dockerfile: buildx.Dockerfile
+    image_templates:
+      - 'traefik/whoamitcp:latest-arm64'
+      - 'traefik/whoamitcp:{{ .Tag }}-arm64'
+      - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
+    build_flag_templates:
+      - '--pull'
+      - '--label=org.opencontainers.image.description=Tiny Go TCP server that prints OS information and request to output'
+      - '--label=org.opencontainers.image.created={{.Date}}'
+      - '--label=org.opencontainers.image.title={{.ProjectName}}'
+      - '--label=org.opencontainers.image.revision={{.FullCommit}}'
+      - '--label=org.opencontainers.image.version={{.Version}}'
+      - '--label=org.opencontainers.image.source={{.GitURL}}'
+      - '--platform=linux/arm64'
