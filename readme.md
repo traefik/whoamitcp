@@ -1,7 +1,7 @@
 # WhoamiTCP
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/traefik/whoamitcp.svg)](https://hub.docker.com/r/traefik/whoamitcp/)
 [![Build Status](https://github.com/traefik/whoamitcp/workflows/Main/badge.svg?branch=master)](https://github.com/traefik/whoamitcp/actions)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/traefik/whoamitcp.svg)](https://hub.docker.com/r/traefik/whoamitcp)
 
 | Flag       | Default | Description            |
 |------------|---------|------------------------|
