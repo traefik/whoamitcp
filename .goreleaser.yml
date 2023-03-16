@@ -51,6 +51,22 @@ docker_manifests:
       - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
       - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-armv7'
 
+  - name_template: 'ghcr.io/traefik/whoamitcp:{{ .Tag }}'
+    image_templates:
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-arm64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-armv7'
+  - name_template: 'ghcr.io/traefik/whoamitcp:latest'
+    image_templates:
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-arm64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-armv7'
+  - name_template: 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}'
+    image_templates:
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-amd64'
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-armv7'
+
 dockers:
   - use: buildx
     goos: linux
@@ -60,6 +76,9 @@ dockers:
       - 'traefik/whoamitcp:latest-amd64'
       - 'traefik/whoamitcp:{{ .Tag }}-amd64'
       - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-amd64'
+      - 'ghcr.io/traefik/whoamitcp:latest-amd64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-amd64'
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-amd64'
     build_flag_templates:
       - '--pull'
       # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
@@ -81,6 +100,9 @@ dockers:
       - 'traefik/whoamitcp:latest-arm64'
       - 'traefik/whoamitcp:{{ .Tag }}-arm64'
       - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
+      - 'ghcr.io/traefik/whoamitcp:latest-arm64'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-arm64'
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-arm64'
     build_flag_templates:
       - '--pull'
       # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
@@ -103,6 +125,9 @@ dockers:
       - 'traefik/whoamitcp:latest-armv7'
       - 'traefik/whoamitcp:{{ .Tag }}-armv7'
       - 'traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-armv7'
+      - 'ghcr.io/traefik/whoamitcp:latest-armv7'
+      - 'ghcr.io/traefik/whoamitcp:{{ .Tag }}-armv7'
+      - 'ghcr.io/traefik/whoamitcp:v{{ .Major }}.{{ .Minor }}-armv7'
     build_flag_templates:
       - '--pull'
       # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
