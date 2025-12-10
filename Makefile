@@ -8,7 +8,7 @@ build:
 	CGO_ENABLED=0 go build -v --trimpath .
 
 test:
-	go test -v -cover ./...
+	go test -v ./...
 
 check:
 	golangci-lint run
