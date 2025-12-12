@@ -1,3 +1,4 @@
+// Package main provides a simple TCP server that responds to WHO queries with system information.
 package main
 
 import (
@@ -12,27 +13,25 @@ import (
 	"strings"
 )
 
-var (
-	port              string
-	certFile, keyFile string
-	name              string
-	banner            bool
-)
+func main() {
+	var (
+		port              string
+		certFile, keyFile string
+		name              string
+		banner            bool
+	)
 
-func init() {
 	flag.StringVar(&port, "port", ":8080", "give me a port number")
 	flag.StringVar(&certFile, "certFile", "", "TLS - certificate path")
 	flag.StringVar(&keyFile, "keyFile", "", "TLS - key path")
 	flag.StringVar(&name, "name", "", "name")
 	flag.BoolVar(&banner, "banner", false, "Connection banner")
-}
-
-func main() {
 	flag.Parse()
-	fmt.Printf("Starting up on port %s", port)
+
+	log.Printf("Starting up on port %s", port)
 
 	var listener net.Listener
-	if len(certFile) > 0 && len(keyFile) > 0 {
+	if certFile != "" && keyFile != "" {
 		tlsConfig, err := createTLSConfig(certFile, keyFile)
 		if err != nil {
 			log.Fatalf("error creating TLS configuration: %v", err)
@@ -61,11 +60,11 @@ func main() {
 				log.Fatal(err)
 			}
 		}
-		go serveTCP(conn)
+		go serveTCP(conn, name)
 	}
 }
 
-func serveTCP(conn io.ReadWriteCloser) {
+func serveTCP(conn io.ReadWriteCloser, name string) {
 	defer func() { _ = conn.Close() }()
 
 	for {
@@ -82,7 +81,7 @@ func serveTCP(conn io.ReadWriteCloser) {
 		}
 
 		if temp == "WHO" {
-			_, err := conn.Write([]byte(whoAmIInfo()))
+			_, err := conn.Write([]byte(whoAmIInfo(name)))
 			if err != nil {
 				log.Println(err)
 			}
@@ -95,10 +94,10 @@ func serveTCP(conn io.ReadWriteCloser) {
 	}
 }
 
-func whoAmIInfo() string {
+func whoAmIInfo(name string) string {
 	var out bytes.Buffer
 
-	if len(name) > 0 {
+	if name != "" {
 		out.WriteString(fmt.Sprintf("Name: %s\n", name))
 	}
 
@@ -125,7 +124,9 @@ func whoAmIInfo() string {
 }
 
 func createTLSConfig(certFile, keyFile string) (*tls.Config, error) {
-	config := &tls.Config{}
+	config := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
 	config.Certificates = make([]tls.Certificate, 1)
 
 	var err error

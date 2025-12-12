@@ -1,3 +1,3 @@
 module github.com/traefik/whoamitcp
 
-go 1.19
+go 1.25

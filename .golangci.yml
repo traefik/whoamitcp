@@ -1,96 +1,64 @@
-run:
-  timeout: 2m
-  skip-files: []
-
-linters-settings:
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-  gocyclo:
-    min-complexity: 16
-  goconst:
-    min-len: 3
-    min-occurrences: 3
-  misspell:
-    locale: US
-  funlen:
-    lines: -1
-    statements: 40
-  gofumpt:
-    extra-rules: true
-  depguard:
-    rules:
-      main:
-        deny:
-          - pkg: "github.com/instana/testify"
-            desc: not allowed
-          - pkg: "github.com/pkg/errors"
-            desc: Should be replaced by standard lib errors package
-  godox:
-    keywords:
-      - FIXME
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-    disabled-checks:
-      - sloppyReassign
-      - rangeValCopy
-      - octalLiteral
-      - paramTypeCombine # already handle by gofumpt.extra-rules
-    settings:
-      hugeParam:
-        sizeThreshold: 100
-  forbidigo:
-    forbid:
-      - '^print(ln)?$'
-      - '^panic$'
-      - '^spew\.Print(f|ln)?$'
-      - '^spew\.Dump$'
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - deadcode # deprecated
-    - exhaustivestruct # deprecated
-    - golint # deprecated
-    - ifshort # deprecated
-    - interfacer # deprecated
-    - maligned # deprecated
-    - nosnakecase # deprecated
-    - scopelint # deprecated
-    - scopelint # deprecated
-    - structcheck # deprecated
-    - varcheck # deprecated
-    - execinquery # not relevant (SQL)
-    - rowserrcheck # not relevant (SQL)
-    - sqlclosecheck # not relevant (SQL)
-    - cyclop # duplicate of gocyclo
+    - contextcheck
+    - cyclop
     - dupl
+    - err113
     - exhaustive
     - exhaustruct
-    - forbidigo
-    - gochecknoglobals
-    - gochecknoinits
-    - goerr113
-    - gomnd
-    - gosec
+    - gocognit
     - lll
+    - mnd
+    - nestif
     - nilnil
     - nlreturn
+    - noctx
     - paralleltest
     - prealloc
+    - rowserrcheck
+    - sqlclosecheck
     - testpackage
     - tparallel
     - varnamelen
     - wrapcheck
     - wsl
-
+    - wsl_v5
+  settings:
+    depguard:
+      rules:
+        main:
+          deny:
+            - pkg: github.com/instana/testify
+              desc: not allowed
+            - pkg: github.com/pkg/errors
+              desc: Should be replaced by standard lib errors package
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+    gocyclo:
+      min-complexity: 23
+    govet:
+      enable:
+        - shadow
+    misspell:
+      locale: US
+    perfsprint:
+      err-error: true
+      errorf: true
+      sprintf1: true
+      strconcat: false
+  exclusions:
+    generated: lax
 issues:
-  exclude-use-default: false
-  max-per-linter: 0
+  max-issues-per-linter: 0
   max-same-issues: 0
-  exclude:
-    - 'package-comments: should have a package comment'
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
